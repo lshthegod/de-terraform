@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Server1 Ping</title>
+    <style>
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: linear-gradient(135deg, #f6f8ff 0%, #eef3ff 50%, #e8f7ff 100%);
+      }
+      .center {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .card {
+        width: 100%;
+        max-width: 560px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 24px;
+      }
+      h1 { margin: 0 0 6px; font-size: 22px; }
+      .subtitle { margin: 0 0 16px; color: #6b7280; font-size: 14px; }
+      .actions { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      button {
+        padding: 10px 16px;
+        cursor: pointer;
+        border: 0;
+        border-radius: 10px;
+        background: #4f46e5;
+        color: #fff;
+        font-weight: 600;
+        transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+        box-shadow: 0 6px 14px rgba(79,70,229,.25);
+      }
+      button:hover { background: #4338ca; }
+      button:active { transform: translateY(1px); }
+      .console {
+        margin: 0;
+        padding: 14px;
+        background: #0b1020;
+        color: #e2e8f0;
+        border-radius: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        min-height: 56px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <div class="card">
+        <h1>서버1 → 서버2 헬스 체크</h1>
+        <p class="subtitle">아래 ping을 눌렀을 때 pong이 나오면 성공</p>
+        <div class="actions">
+          <button id="btn-ping">ping</button>
+        </div>
+        <pre id="out" class="console">결과가 여기에 표시됩니다</pre>
+      </div>
+    </div>
+    <script>
+      const out = document.getElementById('out');
+
+      document.getElementById('btn-ping').onclick = async () => {
+        out.textContent = 'loading...';
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        try {
+          const r = await fetch('/api/ping', { signal: controller.signal });
+          const text = await r.text();
+          clearTimeout(timeoutId);
+
+          if (text.trim().toLowerCase() === 'pong') {
+            out.textContent = text;
+          } else {
+            out.textContent = 'fail';
+          }
+        } catch (e) {
+          clearTimeout(timeoutId);
+          out.textContent = 'fail';
+        }
+      };
+    </script>
+  </body>
+</html>
