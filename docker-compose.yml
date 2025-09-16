@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  server2:
+    build: ./server2
+    image: server2-img:latest
+    container_name: server2
+    ports:
+      - "8002:8000"
+    networks:
+      - msa-net
+
+  server1:
+    build: ./server1
+    image: server1-img:latest
+    container_name: server1
+    environment:
+      - SERVER2_URL=http://server2:8000
+    depends_on:
+      - server2
+    ports:
+      - "8000:8000"
+    networks:
+      - msa-net
+
+networks:
+  msa-net:
