@@ -1,7 +1,4 @@
-output "server1_url" {
-  value = "http://localhost:8000"
-}
-
-output "server2_url" {
-  value = "http://localhost:8002"
+output "public_app_endpoint" {
+  value       = "${aws_instance.docker.public_ip}:8000"
+  description = "EC2 public IP with port 8000"
 }
